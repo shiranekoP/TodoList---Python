@@ -73,87 +73,89 @@ class todo:
         return self.date
 
 def commandControl(command, list, id):
-    if command.upper().lower() == "/help":              # /help command
+    if command.upper().lower() == "help":              # /help command
         print("-----------------------------------------------")
-        print("/help            call a help command \n")
-        print("/add             add a task to todo list\n")
-        print("/done            check a task if it has been done\n")
-        print("/display         display all undone tasks\n")
-        print("/display_all     display all registered tasks")
+        print(" help            call a help command \n")
+        print(" add             add a task to todo list\n")
+        print(" done            check a task if it has been done\n")
+        print(" display         display all undone tasks\n")
+        print(" display_all     display all registered tasks\n")
+        print(" exit            end process")      
         print("-----------------------------------------------")
 
-    elif command.upper().lower() == "/display":         # /display display all undone tasks
+    elif command.upper().lower() == "display":         # /display display all undone tasks
         print("-----------------------------------------------")
         for i in list.getList():
             if i.getState() == "Undone":
                 print(str(i) + "\n")
         print("-----------------------------------------------")
 
-    elif command.upper().lower() == "/display_all":     # /display_all 
+    elif command.upper().lower() == "display_all":     # /display_all 
         print(list)
 
-    elif command.upper().lower() == "/done":            # /done
+    elif command.upper().lower() == "done":            # /done
         while True:
             try:
                 inputID = int(input("Select ID: "))
                 break
             except ValueError:
                 print("Invailed ID. Must be number")
-        if inputID > list.getLen() - 1:     #empty list = -1
+        if inputID > list.getLen() - 1:     # empty list = -1
             print("Entered ID doesn't exist")
         else:
             print("Update state of ID "+ str(inputID))
             list.list[inputID].setState("Done")
             save_object(list, "todoList_data.pkl")
 
-    elif command.upper().lower() == "/add":
+    elif command.upper().lower() == "add":              # /add
         while True:
-            inputDetail = str(input("Enter task detail (Up to 50 Character): "))
+            inputDetail = str(input("Enter task detail (Up to 50 Characters): "))
             if inputDetail == '':
                 print("Task detail need to be filled")
                 continue
             if len(inputDetail) > 50:
-                print("Detail length must be lower than 50 character")
+                print("Detail length must be lower than 50 characters")
                 continue
             break
 
         inputDate = str(input("Enter date (can empty): "))
         todoObj = todo(id, inputDetail,inputDate)
         list.addList(todoObj)
+        save_object(list, "todoList_data.pkl")
 
     else:
-        print("Error Command !")
+        print("Error Command ! type 'help' for command")
 
 def save_object(obj, filename):
     with open(filename, 'wb') as output:  # Overwrites any existing file.
         pickle.dump(obj, output, pickle.HIGHEST_PROTOCOL)
 
 # Main
-try:
+try:                                                        #Try to load file
     with open("todoList_data.pkl", "rb") as s:
         while True:
             try:
                 list = pickle.load(s)
-                print("todoList_data.pkl is loaded.")
+                print("> todoList_data.pkl is loaded.")
             except EOFError:
                 break
-    id = list.getLen() - 1
+    id = list.getLen() - 1                                  # get lastest recorded ID
 
 except OSError as e:
-    print("Lastest file don't exist")
-    list = todoList()
+    print("> Lastest file don't exist")
+    list = todoList()                                   #new list with new ID starts 0
     id = 0
 
-
-
 print("-----------------------------------------------")
-print("Welcome to Todo list program. Types /help for more command")
+print("Welcome to Todo list program. Types 'help' for more command")
 
 while True:
     command = str(input("Select Command: "))
+    if command.upper().lower() == "exit":
+        print("> Closing program..........")
+        break
     commandControl(command,list,id)
-    if command.upper().lower() == "/add":
+    if command.upper().lower() == "add":
         id += 1
-        save_object(list, "todoList_data.pkl")
-    
-    print("\n")
+
+    print("-----------------------------------------------")
